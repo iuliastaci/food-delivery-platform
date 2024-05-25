@@ -1,12 +1,20 @@
 package main;
 
+import main.dao.MenuItemDAO;
+import main.dao.OrderDAO;
+import main.dao.UserDAO;
+import main.dao.VenueDAO;
+
 import java.util.List;
 import java.util.Scanner;
 
 public class Main {
     public static void main(String[] args) {
         Scanner scanner = new Scanner(System.in);
-        FoodDeliveryService service = new FoodDeliveryService();
+        UserDAO userDAO = new UserDAO();
+        VenueDAO venueDAO = new VenueDAO();
+        MenuItemDAO menuItemDAO = new MenuItemDAO();
+        OrderDAO orderDAO = new OrderDAO(); // Assuming you have OrderDAO implemented similarly
 
         while (true) {
             System.out.println("Select an action:");
@@ -32,12 +40,16 @@ public class Main {
                     String email = scanner.nextLine();
                     System.out.print("Enter your address: ");
                     String address = scanner.nextLine();
-                    User.registerUser(name, email, address);
+                    User user = new User();
+                    user.setName(name);
+                    user.setEmail(email);
+                    user.setAddress(address);
+                    userDAO.registerUser(user);
                     break;
                 case 2:
                     System.out.print("Enter your email: ");
                     String userEmail = scanner.nextLine();
-                    boolean authenticated = User.authenticateUser(userEmail);
+                    boolean authenticated = userDAO.authenticateUser(userEmail);
                     System.out.println("Authentication " + (authenticated ? "successful" : "failed"));
                     break;
                 case 3:
@@ -48,7 +60,10 @@ public class Main {
                     System.out.print("Enter restaurant phone number: ");
                     String phoneNumber = scanner.nextLine();
                     Venue venue = new Venue();
-                    venue.addVenue(venueName, venueAddress, phoneNumber);
+                    venue.setName(venueName);
+                    venue.setAddress(venueAddress);
+                    venue.setPhoneNumber(phoneNumber);
+                    venueDAO.addVenue(venue);
                     break;
                 case 4:
                     System.out.print("Enter restaurant ID: ");
@@ -62,7 +77,11 @@ public class Main {
                     System.out.print("Enter item description: ");
                     String itemDescription = scanner.nextLine();
                     MenuItem menuItem = new MenuItem();
-                    menuItem.addMenuItem(venueId, itemName, itemPrice, itemDescription);
+                    menuItem.setVenueId(venueId);
+                    menuItem.setName(itemName);
+                    menuItem.setPrice(itemPrice);
+                    menuItem.setDescription(itemDescription);
+                    menuItemDAO.addMenuItem(menuItem);
                     break;
                 case 5:
                     System.out.print("Enter user ID: ");
@@ -73,12 +92,21 @@ public class Main {
                     int itemId = scanner.nextInt();
                     System.out.print("Enter quantity: ");
                     int quantity = scanner.nextInt();
-                    Order.placeOrder(userId, orderVenueId, itemId, quantity);
+                    Order order = new Order();
+                    order.setUserId(userId);
+                    order.setVenueId(orderVenueId);
+                    order.setStatus("Pending");
+                    int orderId = orderDAO.placeOrder(order); // Assuming placeOrder returns the generated order ID
+                    OrderItem orderItem = new OrderItem();
+                    orderItem.setOrderId(orderId);
+                    orderItem.setItemId(itemId);
+                    orderItem.setQuantity(quantity);
+                    orderDAO.addOrderItem(orderItem);
                     break;
                 case 6:
                     System.out.print("Enter order ID: ");
-                    int orderId = scanner.nextInt();
-                    Order.viewOrderStatus(orderId);
+                    int viewOrderId = scanner.nextInt();
+                    orderDAO.viewOrderStatus(viewOrderId);
                     break;
                 case 7:
                     System.out.print("Enter order ID: ");
@@ -86,10 +114,10 @@ public class Main {
                     scanner.nextLine(); // Consume newline
                     System.out.print("Enter new status (Pending/Delivered): ");
                     String status = scanner.nextLine();
-                    Order.updateOrderStatus(updateOrderId, status);
+                    orderDAO.updateOrderStatus(updateOrderId, status);
                     break;
                 case 8:
-                    List<Venue> venues = Venue.listVenues();
+                    List<Venue> venues = venueDAO.listVenues();
                     for (Venue v : venues) {
                         System.out.println(v);
                     }
@@ -97,7 +125,7 @@ public class Main {
                 case 9:
                     System.out.print("Enter restaurant ID: ");
                     int listVenueId = scanner.nextInt();
-                    List<MenuItem> menuItems = MenuItem.listMenuItems(listVenueId);
+                    List<MenuItem> menuItems = menuItemDAO.listMenuItems(listVenueId);
                     for (MenuItem mi : menuItems) {
                         System.out.println(mi);
                     }
@@ -113,5 +141,3 @@ public class Main {
         }
     }
 }
-
-

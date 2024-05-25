@@ -20,6 +20,36 @@ public class User {
         AuditLog.logAction("authenticateUser");
         return true; // Or false if authentication fails
     }
+
+    public String getName(){
+        return name;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public String getAddress() {
+        return address;
+    }
+
+    public void setUserId(int userId) {
+        this.userId = userId;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    public void setAddress(String address) {
+        this.address = address;
+    }
+
+
 }
 
 
