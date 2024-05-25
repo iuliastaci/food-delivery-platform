@@ -17,7 +17,7 @@ public class BdConnection {
             connection = DriverManager.getConnection(URL, USER, PASSWORD);
         } catch (SQLException e) {
             e.printStackTrace();
-            System.out.println("merge");
+
         }
         return connection;
     }
