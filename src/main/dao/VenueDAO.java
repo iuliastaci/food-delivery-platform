@@ -1,6 +1,7 @@
 package main.dao;
-import main.Venue;
+
 import main.db.BdConnection;
+import main.model.Venue;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -21,6 +22,8 @@ public class VenueDAO {
         } catch (SQLException e) {
             e.printStackTrace();
         }
+
+
     }
 
     public List<Venue> listVenues() {
@@ -41,5 +44,38 @@ public class VenueDAO {
             e.printStackTrace();
         }
         return venues;
+    }
+
+    public Venue getVenueByName(String name) {
+        String sql = "SELECT * FROM Venues WHERE name = ?";
+        try (Connection conn = BdConnection.getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            pstmt.setString(1, name);
+            ResultSet rs = pstmt.executeQuery();
+            if (rs.next()) {
+                Venue venue = new Venue();
+                venue.setVenueId(rs.getInt("venue_id"));
+                venue.setName(rs.getString("name"));
+                venue.setAddress(rs.getString("address"));
+                venue.setPhoneNumber(rs.getString("phone_number"));
+                return venue;
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    public boolean venueExists(String name) {
+        String sql = "SELECT * FROM Venues WHERE name = ?";
+        try (Connection conn = BdConnection.getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            pstmt.setString(1, name);
+            ResultSet rs = pstmt.executeQuery();
+            return rs.next(); // returns true if venue exists
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return false;
     }
 }

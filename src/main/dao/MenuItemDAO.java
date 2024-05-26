@@ -1,9 +1,12 @@
 package main.dao;
 
-import main.MenuItem;
 import main.db.BdConnection;
+import main.model.MenuItem;
 
-import java.sql.*;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -28,16 +31,15 @@ public class MenuItemDAO {
         try (Connection conn = BdConnection.getConnection();
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
             pstmt.setInt(1, venueId);
-            try (ResultSet rs = pstmt.executeQuery()) {
-                while (rs.next()) {
-                    MenuItem menuItem = new MenuItem();
-                    menuItem.setItemId(rs.getInt("item_id"));
-                    menuItem.setVenueId(rs.getInt("venue_id"));
-                    menuItem.setName(rs.getString("name"));
-                    menuItem.setPrice(rs.getDouble("price"));
-                    menuItem.setDescription(rs.getString("description"));
-                    menuItems.add(menuItem);
-                }
+            ResultSet rs = pstmt.executeQuery();
+            while (rs.next()) {
+                MenuItem menuItem = new MenuItem();
+                menuItem.setItemId(rs.getInt("item_id"));
+                menuItem.setVenueId(rs.getInt("venue_id"));
+                menuItem.setName(rs.getString("name"));
+                menuItem.setPrice(rs.getDouble("price"));
+                menuItem.setDescription(rs.getString("description"));
+                menuItems.add(menuItem);
             }
         } catch (SQLException e) {
             e.printStackTrace();

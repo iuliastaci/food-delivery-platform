@@ -1,4 +1,4 @@
-package main;
+package main.model;
 
 public class OrderItem {
     private int orderItemId;
@@ -15,4 +15,6 @@ public class OrderItem {
     public void setItemId(int itemId) { this.itemId = itemId; }
     public int getQuantity() { return quantity; }
     public void setQuantity(int quantity) { this.quantity = quantity; }
+
+
 }

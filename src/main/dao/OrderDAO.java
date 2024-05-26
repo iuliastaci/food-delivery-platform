@@ -1,7 +1,7 @@
 package main.dao;
 
-import main.Order;
-import main.OrderItem;
+import main.model.Order;
+import main.model.OrderItem;
 import main.db.BdConnection;
 
 import java.sql.*;
