@@ -10,8 +10,8 @@ public class UserService {
         userDAO.registerUser(user);
     }
 
-    public boolean authenticateUser(String email) {
-        return userDAO.authenticateUser(email);
+    public boolean authenticateUser(String email, String password) {
+        return userDAO.authenticateUser(email, password);
     }
 
     public User getUserByEmail(String email) {

@@ -5,6 +5,7 @@ public class User {
     private String name;
     private String email;
     private String address;
+    private String password; // Add password field
 
     // Getters and setters
     public int getUserId() { return userId; }
@@ -15,4 +16,6 @@ public class User {
     public void setEmail(String email) { this.email = email; }
     public String getAddress() { return address; }
     public void setAddress(String address) { this.address = address; }
+    public String getPassword() { return password; }
+    public void setPassword(String password) { this.password = password; }
 }

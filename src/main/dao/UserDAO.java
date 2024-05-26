@@ -10,23 +10,25 @@ import java.sql.SQLException;
 
 public class UserDAO {
     public void registerUser(User user) {
-        String sql = "INSERT INTO Users (name, email, address) VALUES (?, ?, ?)";
+        String sql = "INSERT INTO Users (name, email, address, password) VALUES (?, ?, ?, ?)";
         try (Connection conn = BdConnection.getConnection();
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
             pstmt.setString(1, user.getName());
             pstmt.setString(2, user.getEmail());
             pstmt.setString(3, user.getAddress());
+            pstmt.setString(4, user.getPassword());
             pstmt.executeUpdate();
         } catch (SQLException e) {
             e.printStackTrace();
         }
     }
 
-    public boolean authenticateUser(String email) {
-        String sql = "SELECT * FROM Users WHERE email = ?";
+    public boolean authenticateUser(String email, String password) {
+        String sql = "SELECT * FROM Users WHERE email = ? AND password = ?";
         try (Connection conn = BdConnection.getConnection();
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
             pstmt.setString(1, email);
+            pstmt.setString(2, password);
             ResultSet rs = pstmt.executeQuery();
             return rs.next(); // returns true if user exists
         } catch (SQLException e) {
@@ -47,6 +49,7 @@ public class UserDAO {
                 user.setName(rs.getString("name"));
                 user.setEmail(rs.getString("email"));
                 user.setAddress(rs.getString("address"));
+                user.setPassword(rs.getString("password"));
                 return user;
             }
         } catch (SQLException e) {

@@ -76,17 +76,22 @@ public class Main {
         String email = scanner.nextLine();
         System.out.print("Enter your address: ");
         String address = scanner.nextLine();
+        System.out.print("Enter your password: ");
+        String password = scanner.nextLine();
         User user = new User();
         user.setName(name);
         user.setEmail(email);
         user.setAddress(address);
+        user.setPassword(password);
         userService.registerUser(user);
     }
 
     private static void authenticateUser(Scanner scanner, UserService userService) {
         System.out.print("Enter your email: ");
         String email = scanner.nextLine();
-        boolean authenticated = userService.authenticateUser(email);
+        System.out.print("Enter your password: ");
+        String password = scanner.nextLine();
+        boolean authenticated = userService.authenticateUser(email, password);
         if (authenticated) {
             authenticatedUser = userService.getUserByEmail(email);
             System.out.println("Authentication successful.");
