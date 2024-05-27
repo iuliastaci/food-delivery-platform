@@ -9,7 +9,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 
 public class UserDAO {
-    public void registerUser(User user) {
+    public boolean registerUser(User user) {
         String sql = "INSERT INTO Users (name, email, address, password) VALUES (?, ?, ?, ?)";
         try (Connection conn = BdConnection.getConnection();
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
@@ -18,8 +18,10 @@ public class UserDAO {
             pstmt.setString(3, user.getAddress());
             pstmt.setString(4, user.getPassword());
             pstmt.executeUpdate();
+            return true;
         } catch (SQLException e) {
             e.printStackTrace();
+            return false;
         }
     }
 

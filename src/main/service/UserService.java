@@ -6,8 +6,8 @@ import main.model.User;
 public class UserService {
     private UserDAO userDAO = new UserDAO();
 
-    public void registerUser(User user) {
-        userDAO.registerUser(user);
+    public boolean registerUser(User user) {
+        return userDAO.registerUser(user);
     }
 
     public boolean authenticateUser(String email, String password) {

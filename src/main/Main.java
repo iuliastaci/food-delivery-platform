@@ -23,15 +23,15 @@ public class Main {
             System.out.println("1. Register User");
             System.out.println("2. Authenticate User");
             System.out.println("3. Place Order");
-            System.out.println("4. Add Restaurant");
+            System.out.println("4. Add Venue");
             System.out.println("5. Add Menu Item");
             System.out.println("6. View Order Status");
             System.out.println("7. Update Order Status");
-            System.out.println("8. List Restaurants");
+            System.out.println("8. List Venues");
             System.out.println("9. List Menu Items");
             System.out.println("0. Exit");
             int choice = scanner.nextInt();
-            scanner.nextLine(); // Consume newline
+            scanner.nextLine();
 
             switch (choice) {
                 case 1:
@@ -83,7 +83,12 @@ public class Main {
         user.setEmail(email);
         user.setAddress(address);
         user.setPassword(password);
-        userService.registerUser(user);
+        boolean success = userService.registerUser(user);
+        if (success) {
+            System.out.println("Registration successful.");
+        } else {
+            System.out.println("Registration failed. Please try again.");
+        }
     }
 
     private static void authenticateUser(Scanner scanner, UserService userService) {
