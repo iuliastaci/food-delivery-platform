@@ -6,7 +6,14 @@ public class OrderItem {
     private int itemId;
     private int quantity;
 
-    // Getters and setters
+    public OrderItem() {
+    }
+    public OrderItem(int orderItemId, int orderId, int itemId, int quantity) {
+        this.orderItemId = orderItemId;
+        this.orderId = orderId;
+        this.itemId = itemId;
+        this.quantity = quantity;
+    }
     public int getOrderItemId() { return orderItemId; }
     public void setOrderItemId(int orderItemId) { this.orderItemId = orderItemId; }
     public int getOrderId() { return orderId; }
@@ -15,6 +22,5 @@ public class OrderItem {
     public void setItemId(int itemId) { this.itemId = itemId; }
     public int getQuantity() { return quantity; }
     public void setQuantity(int quantity) { this.quantity = quantity; }
-
 
 }

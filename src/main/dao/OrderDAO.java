@@ -7,7 +7,6 @@ import main.db.BdConnection;
 import java.sql.*;
 
 public class OrderDAO {
-    // Method to place an order and return the generated order ID
     public int placeOrder(Order order) {
         String sql = "INSERT INTO Orders (user_id, venue_id, status) VALUES (?, ?, ?)";
         try (Connection conn = BdConnection.getConnection();
@@ -29,8 +28,6 @@ public class OrderDAO {
         }
         return -1;
     }
-
-    // Method to add an order item
     public void addOrderItem(OrderItem orderItem) {
         String sql = "INSERT INTO OrderItems (order_id, item_id, quantity) VALUES (?, ?, ?)";
         try (Connection conn = BdConnection.getConnection();
@@ -44,7 +41,6 @@ public class OrderDAO {
         }
     }
 
-    // Method to view order status
     public void viewOrderStatus(int orderId) {
         String sql = "SELECT status FROM Orders WHERE order_id = ?";
         try (Connection conn = BdConnection.getConnection();
@@ -63,7 +59,6 @@ public class OrderDAO {
         }
     }
 
-    // Method to update order status
     public void updateOrderStatus(int orderId, String status) {
         String sql = "UPDATE Orders SET status = ? WHERE order_id = ?";
         try (Connection conn = BdConnection.getConnection();

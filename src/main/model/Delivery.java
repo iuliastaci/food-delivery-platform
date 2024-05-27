@@ -8,12 +8,16 @@ public class Delivery {
     private Date deliveryDate;
     private String status;
 
+    public Delivery() {
+    }
+
     public Delivery(int deliveryId, int orderId, Date deliveryDate, String status) {
         this.deliveryId = deliveryId;
         this.orderId = orderId;
         this.deliveryDate = deliveryDate;
         this.status = status;
     }
+
 
     public int getDeliveryId() {
         return deliveryId;

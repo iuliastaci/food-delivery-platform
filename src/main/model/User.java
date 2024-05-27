@@ -5,9 +5,19 @@ public class User {
     private String name;
     private String email;
     private String address;
-    private String password; // Add password field
+    private String password;
 
-    // Getters and setters
+    public User() {
+    }
+
+    public User(int userId, String name, String email, String address, String password) {
+        this.userId = userId;
+        this.name = name;
+        this.email = email;
+        this.address = address;
+        this.password = password;
+    }
+
     public int getUserId() { return userId; }
     public void setUserId(int userId) { this.userId = userId; }
     public String getName() { return name; }

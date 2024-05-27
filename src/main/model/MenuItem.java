@@ -7,7 +7,16 @@ public class MenuItem {
     private double price;
     private String description;
 
-    // Getters and setters
+    public MenuItem() {
+    }
+    public MenuItem(int itemId, int venueId, String name, double price, String description) {
+    this.itemId = itemId;
+    this.venueId = venueId;
+    this.name = name;
+    this.price = price;
+    this.description = description;
+}
+
     public int getItemId() { return itemId; }
     public void setItemId(int itemId) { this.itemId = itemId; }
     public int getVenueId() { return venueId; }

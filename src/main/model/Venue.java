@@ -1,13 +1,19 @@
 package main.model;
 
-import java.util.ArrayList;
-import java.util.List;
-
 public class Venue {
     private int venueId;
     private String name;
     private String address;
     private String phoneNumber;
+    public Venue() {
+    }
+
+    public Venue(int venueId, String name, String address, String phoneNumber) {
+        this.venueId = venueId;
+        this.name = name;
+        this.address = address;
+        this.phoneNumber = phoneNumber;
+    }
 
     public String getName(){
         return name;
@@ -39,8 +45,5 @@ public class Venue {
     public int getVenueId() {
         return venueId;
     }
-
-
-
 
 }

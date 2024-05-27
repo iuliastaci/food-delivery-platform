@@ -1,7 +1,5 @@
 package main.model;
 
-import main.model.AuditLog;
-
 import java.util.Date;
 
 public class Order {
@@ -11,26 +9,16 @@ public class Order {
     private Date orderDate;
     private String status;
 
-    // Getters, setters, and constructors
-
-    public static void placeOrder(int userId, int venueId, int itemId, int quantity) {
-        // Implementation to place order
-        // Database logic here
-        AuditLog.logAction("placeOrder");
+    public Order() {
     }
 
-    public static void viewOrderStatus(int orderId) {
-        // Implementation to view order status
-        // Database logic here
-        AuditLog.logAction("viewOrderStatus");
+    public Order(int orderId, int userId, int venueId, Date orderDate, String status) {
+        this.orderId = orderId;
+        this.userId = userId;
+        this.venueId = venueId;
+        this.orderDate = orderDate;
+        this.status = status;
     }
-
-    public static void updateOrderStatus(int orderId, String status) {
-        // Implementation to update order status
-        // Database logic here
-        AuditLog.logAction("updateOrderStatus");
-    }
-
     public int getOrderId() {
         return orderId;
     }
@@ -70,8 +58,6 @@ public class Order {
     public void setStatus(String status) {
         this.status = status;
     }
-
-
 
 }
 
