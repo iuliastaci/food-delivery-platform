@@ -28,7 +28,7 @@ public class OrderDAO {
         }
         return -1;
     }
-    public void addOrderItem(OrderItem orderItem) {
+    public boolean addOrderItem(OrderItem orderItem) {
         String sql = "INSERT INTO OrderItems (order_id, item_id, quantity) VALUES (?, ?, ?)";
         try (Connection conn = BdConnection.getConnection();
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
@@ -39,13 +39,14 @@ public class OrderDAO {
         } catch (SQLException e) {
             e.printStackTrace();
         }
+        return true;
     }
 
-    public void viewOrderStatus(int orderId) {
-        String sql = "SELECT status FROM Orders WHERE order_id = ?";
+    public void viewOrderStatus(int userId) {
+        String sql = "SELECT status FROM Orders WHERE user_id = ? order by order_date desc limit 1";
         try (Connection conn = BdConnection.getConnection();
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
-            pstmt.setInt(1, orderId);
+            pstmt.setInt(1, userId);
             try (ResultSet rs = pstmt.executeQuery()) {
                 if (rs.next()) {
                     String status = rs.getString("status");
@@ -70,4 +71,5 @@ public class OrderDAO {
             e.printStackTrace();
         }
     }
+
 }

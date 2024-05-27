@@ -24,4 +24,8 @@ public class VenueService {
     public boolean venueExists(String name) {
         return venueDAO.venueExists(name);
     }
+
+    public Venue getVenueByName(String name) {
+        return venueDAO.getVenueByName(name);
+    }
 }
