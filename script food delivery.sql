@@ -3,7 +3,6 @@ USE food_delivery;
 DROP TABLE IF exists Venues;
 DROP TABLE IF exists Users;
 DROP TABLE IF exists Orders;
-DROP TABLE IF exists Deliveries;
 DROP TABLE IF exists MenuItems;
 DROP TABLE IF exists OrderItems;
 DROP TABLE IF exists Roles;

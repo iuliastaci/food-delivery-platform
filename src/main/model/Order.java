@@ -8,12 +8,12 @@ public class Order {
     private int userId;
     private int venueId;
     private Date orderDate;
-    private String status;
+    private OrderStatus status;
 
     public Order() {
     }
 
-    public Order(int orderId, int userId, int venueId, Date orderDate, String status) {
+    public Order(int orderId, int userId, int venueId, Date orderDate, OrderStatus status) {
         this.orderId = orderId;
         this.userId = userId;
         this.venueId = venueId;
@@ -52,11 +52,11 @@ public class Order {
         this.orderDate = orderDate;
     }
 
-    public String getStatus() {
+    public OrderStatus getStatus() {
         return status;
     }
 
-    public void setStatus(String status) {
+    public void setStatus(OrderStatus status) {
         this.status = status;
     }
 
