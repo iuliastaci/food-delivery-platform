@@ -3,17 +3,18 @@ package main.dao;
 import main.model.Order;
 import main.model.OrderItem;
 import main.db.BdConnection;
+import main.model.OrderStatus;
 
 import java.sql.*;
 
 public class OrderDAO {
     public int placeOrder(Order order) {
-        String sql = "INSERT INTO Orders (user_id, venue_id, status) VALUES (?, ?, ?)";
+        String sql = "INSERT INTO Orders (UserId, VenueId, OrderStatusId) VALUES (?, ?, ?)";
         try (Connection conn = BdConnection.getConnection();
              PreparedStatement pstmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
             pstmt.setInt(1, order.getUserId());
             pstmt.setInt(2, order.getVenueId());
-            pstmt.setString(3, order.getStatus());
+            pstmt.setInt(3, order.getStatus().ordinal() + 1);
             pstmt.executeUpdate();
 
             try (ResultSet generatedKeys = pstmt.getGeneratedKeys()) {
@@ -29,7 +30,7 @@ public class OrderDAO {
         return -1;
     }
     public void addOrderItem(OrderItem orderItem) {
-        String sql = "INSERT INTO OrderItems (order_id, item_id, quantity) VALUES (?, ?, ?)";
+        String sql = "INSERT INTO OrderItems (OrderId, ItemId, Quantity) VALUES (?, ?, ?)";
         try (Connection conn = BdConnection.getConnection();
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
             pstmt.setInt(1, orderItem.getOrderId());
@@ -42,13 +43,13 @@ public class OrderDAO {
     }
 
     public void viewOrderStatus(int orderId) {
-        String sql = "SELECT status FROM Orders WHERE order_id = ?";
+        String sql = "SELECT OrderStatusId FROM orders WHERE Id = ?";
         try (Connection conn = BdConnection.getConnection();
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
             pstmt.setInt(1, orderId);
             try (ResultSet rs = pstmt.executeQuery()) {
                 if (rs.next()) {
-                    String status = rs.getString("status");
+                    String status = rs.getInt("OrderStatusId") == 1 ? "PENDING" : "DONE";
                     System.out.println("Order Status: " + status);
                 } else {
                     System.out.println("Order not found.");
@@ -60,10 +61,10 @@ public class OrderDAO {
     }
 
     public void updateOrderStatus(int orderId, String status) {
-        String sql = "UPDATE Orders SET status = ? WHERE order_id = ?";
+        String sql = "UPDATE Orders SET OrderStatusId = ? WHERE Id = ?";
         try (Connection conn = BdConnection.getConnection();
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
-            pstmt.setString(1, status);
+            pstmt.setInt(1, OrderStatus.valueOf(status).ordinal() + 1);
             pstmt.setInt(2, orderId);
             pstmt.executeUpdate();
         } catch (SQLException e) {
