@@ -3,6 +3,7 @@ package main.service;
 import main.dao.OrderDAO;
 import main.model.Order;
 import main.model.OrderItem;
+import main.model.OrderStatus;
 
 import java.util.Date;
 
@@ -13,12 +14,13 @@ public class OrderService {
         Order order = new Order();
         order.setUserId(userId);
         order.setVenueId(venueId);
+        order.setStatus(OrderStatus.PENDING);
         order.setOrderDate(orderDate);
-        order.setStatus("Pending");
+        order.setStatus(OrderStatus.PENDING);
         int orderId = orderDAO.placeOrder(order);
-//        OrderItem orderItem = new OrderItem();
-//        orderItem.setOrderId(orderId);
-//        orderDAO.addOrderItem(orderItem);
+        OrderItem orderItem = new OrderItem();
+        orderItem.setOrderId(orderId);
+        orderDAO.addOrderItem(orderItem);
         return orderId;
     }
 
