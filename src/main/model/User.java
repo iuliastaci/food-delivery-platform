@@ -1,21 +1,23 @@
 package main.model;
 
-public class User {
+public abstract class User {
     private int userId;
     private String name;
     private String email;
     private String address;
     private String password;
+    private String role;
 
     public User() {
     }
 
-    public User(int userId, String name, String email, String address, String password) {
+    public User(int userId, String name, String email, String address, String password, String role) {
         this.userId = userId;
         this.name = name;
         this.email = email;
         this.address = address;
         this.password = password;
+        this.role = role;
     }
 
     public int getUserId() { return userId; }
@@ -28,4 +30,6 @@ public class User {
     public void setAddress(String address) { this.address = address; }
     public String getPassword() { return password; }
     public void setPassword(String password) { this.password = password; }
+    public String getRole() { return role; }
+    public void setRole(String role) { this.role = role; }
 }

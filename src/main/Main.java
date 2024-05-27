@@ -1,5 +1,7 @@
 package main;
 
+import main.model.Client;
+import main.model.Owner;
 import main.model.User;
 import main.service.UserService;
 import main.service.OrderService;
@@ -22,16 +24,16 @@ public class Main {
             System.out.println("Select an action:");
             System.out.println("1. Register User");
             System.out.println("2. Authenticate User");
-            System.out.println("3. Place Order");
-            System.out.println("4. Add Venue");
-            System.out.println("5. Add Menu Item");
+            System.out.println("3. Place Order (Client only)");
+            System.out.println("4. Add Restaurant (Owner only)");
+            System.out.println("5. Add Menu Item (Owner only)");
             System.out.println("6. View Order Status");
             System.out.println("7. Update Order Status");
-            System.out.println("8. List Venues");
+            System.out.println("8. List Restaurants");
             System.out.println("9. List Menu Items");
             System.out.println("0. Exit");
             int choice = scanner.nextInt();
-            scanner.nextLine();
+            scanner.nextLine(); // Consume newline
 
             switch (choice) {
                 case 1:
@@ -78,11 +80,24 @@ public class Main {
         String address = scanner.nextLine();
         System.out.print("Enter your password: ");
         String password = scanner.nextLine();
-        User user = new User();
+        System.out.print("Enter your role (Client/Owner): ");
+        String role = scanner.nextLine();
+
+        User user;
+        if ("Client".equalsIgnoreCase(role)) {
+            user = new Client();
+        } else if ("Owner".equalsIgnoreCase(role)) {
+            user = new Owner();
+        } else {
+            System.out.println("Invalid role. Registration failed.");
+            return;
+        }
+
         user.setName(name);
         user.setEmail(email);
         user.setAddress(address);
         user.setPassword(password);
+
         boolean success = userService.registerUser(user);
         if (success) {
             System.out.println("Registration successful.");
@@ -107,7 +122,7 @@ public class Main {
     }
 
     private static void placeOrder(Scanner scanner, OrderService orderService) {
-        if (authenticatedUser != null) {
+        if (authenticatedUser != null && "Client".equals(authenticatedUser.getRole())) {
             System.out.print("Enter restaurant ID: ");
             int venueId = scanner.nextInt();
             System.out.print("Enter item ID: ");
@@ -116,26 +131,26 @@ public class Main {
             int quantity = scanner.nextInt();
             orderService.placeOrder(authenticatedUser.getUserId(), venueId, itemId, quantity);
         } else {
-            System.out.println("You need to authenticate first.");
+            System.out.println("Only authenticated clients can place orders.");
         }
     }
 
     private static void addRestaurant(Scanner scanner, VenueService venueService) {
-        if (authenticatedUser != null) {
+        if (authenticatedUser != null && "Owner".equals(authenticatedUser.getRole())) {
             System.out.print("Enter restaurant name: ");
             String name = scanner.nextLine();
             System.out.print("Enter restaurant address: ");
             String address = scanner.nextLine();
             System.out.print("Enter restaurant phone number: ");
             String phoneNumber = scanner.nextLine();
-            venueService.addVenue(name, address, phoneNumber);
+            venueService.addVenue(name, address, phoneNumber, authenticatedUser.getUserId());
         } else {
-            System.out.println("You need to authenticate first.");
+            System.out.println("Only authenticated owners can add restaurants.");
         }
     }
 
     private static void addMenuItem(Scanner scanner, MenuItemService menuItemService, VenueService venueService) {
-        if (authenticatedUser != null) {
+        if (authenticatedUser != null && "Owner".equals(authenticatedUser.getRole())) {
             System.out.print("Enter restaurant name: ");
             String venueName = scanner.nextLine();
 
@@ -159,7 +174,7 @@ public class Main {
                 System.out.println("Failed to add menu item for restaurant: " + venueName);
             }
         } else {
-            System.out.println("You need to authenticate first.");
+            System.out.println("Only authenticated owners can add menu items.");
         }
     }
 
