@@ -1,6 +1,7 @@
 package main.model;
 
 import java.util.Date;
+import java.util.Objects;
 
 public class Order {
     private int orderId;
@@ -59,6 +60,28 @@ public class Order {
         this.status = status;
     }
 
+    @Override
+    public String toString() {
+        return "Order{" +
+                "orderId=" + orderId +
+                ", userId=" + userId +
+                ", venueId=" + venueId +
+                ", orderDate=" + orderDate +
+                ", status='" + status + '\'' +
+                '}';
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof Order order)) return false;
+        return getOrderId() == order.getOrderId() && getUserId() == order.getUserId() && getVenueId() == order.getVenueId() && Objects.equals(getOrderDate(), order.getOrderDate()) && Objects.equals(getStatus(), order.getStatus());
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(getOrderId(), getUserId(), getVenueId(), getOrderDate(), getStatus());
+    }
 }
 
 

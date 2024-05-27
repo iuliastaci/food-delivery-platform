@@ -1,6 +1,7 @@
 package main.model;
 
 import java.util.Date;
+import java.util.Objects;
 
 public class Delivery {
     private int deliveryId;
@@ -51,6 +52,26 @@ public class Delivery {
         this.status = status;
     }
 
+    @Override
+    public String toString() {
+        return "Delivery{" +
+                "deliveryId=" + deliveryId +
+                ", orderId=" + orderId +
+                ", deliveryDate=" + deliveryDate +
+                ", status='" + status + '\'' +
+                '}';
+    }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof Delivery delivery)) return false;
+        return getDeliveryId() == delivery.getDeliveryId() && getOrderId() == delivery.getOrderId() && Objects.equals(getDeliveryDate(), delivery.getDeliveryDate()) && Objects.equals(getStatus(), delivery.getStatus());
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(getDeliveryId(), getOrderId(), getDeliveryDate(), getStatus());
+    }
 }
 

@@ -1,5 +1,7 @@
 package main.model;
 
+import java.util.Objects;
+
 public class OrderItem {
     private int orderItemId;
     private int orderId;
@@ -23,4 +25,25 @@ public class OrderItem {
     public int getQuantity() { return quantity; }
     public void setQuantity(int quantity) { this.quantity = quantity; }
 
+    @Override
+    public String toString() {
+        return "OrderItem{" +
+                "orderItemId=" + orderItemId +
+                ", orderId=" + orderId +
+                ", itemId=" + itemId +
+                ", quantity=" + quantity +
+                '}';
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof OrderItem orderItem)) return false;
+        return getOrderItemId() == orderItem.getOrderItemId() && getOrderId() == orderItem.getOrderId() && getItemId() == orderItem.getItemId() && getQuantity() == orderItem.getQuantity();
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(getOrderItemId(), getOrderId(), getItemId(), getQuantity());
+    }
 }

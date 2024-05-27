@@ -46,4 +46,25 @@ public class Venue {
         return venueId;
     }
 
+    @Override
+    public String toString() {
+        return "Venue{" +
+                "venueId=" + venueId +
+                ", name='" + name + '\'' +
+                ", address='" + address + '\'' +
+                ", phoneNumber='" + phoneNumber + '\'' +
+                '}';
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof Venue venue)) return false;
+        return getVenueId() == venue.getVenueId() && getName().equals(venue.getName()) && getAddress().equals(venue.getAddress()) && getPhoneNumber().equals(venue.getPhoneNumber());
+    }
+
+    @Override
+    public int hashCode() {
+        return java.util.Objects.hash(getVenueId(), getName(), getAddress(), getPhoneNumber());
+    }
 }
