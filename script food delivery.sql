@@ -1,3 +1,5 @@
+USE food_delivery;
+
 DROP TABLE IF exists Venues;
 DROP TABLE IF exists Users;
 DROP TABLE IF exists Orders;
@@ -57,7 +59,7 @@ CREATE TABLE MenuItems (
     VenueId INT NOT NULL,
     `Name` VARCHAR(255) NOT NULL,
     Price DECIMAL(10, 2) NOT NULL,
-    `Description` VARCHAR(65535),
+    `Description` VARCHAR(255),
     CONSTRAINT FK_MENU_ITEMS_VENUE FOREIGN KEY (VenueId) REFERENCES Venues(Id),
     CONSTRAINT UQ_MENU_ITEMS_NAME unique(`Name`)
 );
