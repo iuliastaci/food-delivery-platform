@@ -79,3 +79,5 @@ INSERT INTO Roles VALUES
 INSERT INTO OrderStatus VALUES
 (1, 'Pending'),
 (2, 'Done');
+
+ALTER TABLE Users ADD COLUMN Password VARCHAR(255) NOT NULL;
