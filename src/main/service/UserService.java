@@ -4,10 +4,16 @@ import main.dao.UserDAO;
 import main.model.User;
 
 public class UserService {
-    private UserDAO userDAO = new UserDAO();
+    private final UserDAO userDAO = new UserDAO();
 
     public boolean registerUser(User user) {
-        return userDAO.registerUser(user);
+        try {
+            userDAO.add(user);
+            return true;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        }
     }
 
     public boolean authenticateUser(String email, String password) {
