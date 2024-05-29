@@ -1,11 +1,18 @@
 package main;
 
+import main.model.Client;
+import main.model.Owner;
 import main.model.User;
+import main.model.Venue;
+import main.model.MenuItem;
 import main.service.UserService;
 import main.service.OrderService;
 import main.service.VenueService;
 import main.service.MenuItemService;
 
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
 import java.util.Scanner;
 
 public class Main {
@@ -22,12 +29,12 @@ public class Main {
             System.out.println("Select an action:");
             System.out.println("1. Register User");
             System.out.println("2. Authenticate User");
-            System.out.println("3. Place Order");
-            System.out.println("4. Add Venue");
-            System.out.println("5. Add Menu Item");
+            System.out.println("3. Place Order (Client only)");
+            System.out.println("4. Add Restaurant (Owner only)");
+            System.out.println("5. Add Menu Item (Owner only)");
             System.out.println("6. View Order Status");
             System.out.println("7. Update Order Status");
-            System.out.println("8. List Venues");
+            System.out.println("8. List Restaurants");
             System.out.println("9. List Menu Items");
             System.out.println("0. Exit");
             int choice = scanner.nextInt();
@@ -41,7 +48,7 @@ public class Main {
                     authenticateUser(scanner, userService);
                     break;
                 case 3:
-                    placeOrder(scanner, orderService);
+                    placeOrder(scanner, orderService, venueService, menuItemService);
                     break;
                 case 4:
                     addRestaurant(scanner, venueService);
@@ -50,7 +57,7 @@ public class Main {
                     addMenuItem(scanner, menuItemService, venueService);
                     break;
                 case 6:
-                    viewOrderStatus(scanner, orderService);
+                    viewOrderStatus(orderService);
                     break;
                 case 7:
                     updateOrderStatus(scanner, orderService);
@@ -78,11 +85,24 @@ public class Main {
         String address = scanner.nextLine();
         System.out.print("Enter your password: ");
         String password = scanner.nextLine();
-        User user = new User();
+        System.out.print("Enter your role (Client/Owner): ");
+        String role = scanner.nextLine();
+
+        User user;
+        if ("Client".equalsIgnoreCase(role)) {
+            user = new Client();
+        } else if ("Owner".equalsIgnoreCase(role)) {
+            user = new Owner();
+        } else {
+            System.out.println("Invalid role. Registration failed.");
+            return;
+        }
+
         user.setName(name);
         user.setEmail(email);
         user.setAddress(address);
         user.setPassword(password);
+
         boolean success = userService.registerUser(user);
         if (success) {
             System.out.println("Registration successful.");
@@ -106,36 +126,122 @@ public class Main {
         }
     }
 
-    private static void placeOrder(Scanner scanner, OrderService orderService) {
-        if (authenticatedUser != null) {
-            System.out.print("Enter restaurant ID: ");
-            int venueId = scanner.nextInt();
-            System.out.print("Enter item ID: ");
-            int itemId = scanner.nextInt();
-            System.out.print("Enter quantity: ");
-            int quantity = scanner.nextInt();
-            orderService.placeOrder(authenticatedUser.getUserId(), venueId, itemId, quantity);
+    private static void placeOrder(Scanner scanner, OrderService orderService, VenueService venueService, MenuItemService menuItemService) {
+        if (authenticatedUser != null && "Client".equals(authenticatedUser.getRole())) {
+            // List all restaurants
+            List<Venue> venues = venueService.listVenues();
+            if (venues.isEmpty()) {
+                System.out.println("No restaurants available.");
+                return;
+            }
+
+            System.out.println("Available restaurants:");
+            for (Venue venue : venues) {
+                System.out.println(venue.getName());
+            }
+
+            // Prompt user to enter restaurant name
+            System.out.print("Enter the name of the restaurant: ");
+            String venueName = scanner.nextLine();
+            Venue venue = venueService.getVenueByName(venueName);
+
+            if (venue == null) {
+                System.out.println("Restaurant not found.");
+                return;
+            }
+
+            // List menu items for the selected restaurant
+            List<MenuItem> menuItems = menuItemService.listMenuItems(venue.getVenueId());
+            if (menuItems.isEmpty()) {
+                System.out.println("No menu items available for this restaurant.");
+                return;
+            }
+
+            // Create a list to store the order items and quantities
+            List<MenuItem> orderItems = new ArrayList<>();
+            List<Integer> quantities = new ArrayList<>();
+            double totalPrice = 0.0;
+
+            boolean ordering = true;
+            while (ordering) {
+                System.out.println("Available menu items:");
+                for (MenuItem menuItem : menuItems) {
+                    System.out.println(menuItem.getItemId() + ". " + menuItem.getName() + " - $" + menuItem.getPrice());
+                }
+
+                // Prompt user to place order
+                System.out.print("Enter item ID: ");
+                int itemId = scanner.nextInt();
+                System.out.print("Enter quantity: ");
+                int quantity = scanner.nextInt();
+                scanner.nextLine(); // Consume newline
+
+                MenuItem selectedItem = null;
+                for (MenuItem menuItem : menuItems) {
+                    if (menuItem.getItemId() == itemId) {
+                        selectedItem = menuItem;
+                        break;
+                    }
+                }
+
+                if (selectedItem != null) {
+                    orderItems.add(selectedItem);
+                    quantities.add(quantity);
+                    totalPrice += selectedItem.getPrice() * quantity;
+                } else {
+                    System.out.println("Invalid item ID.");
+                }
+
+                // Prompt user if they want to add more items
+                System.out.print("Do you want anything else? (yes/no): ");
+                String response = scanner.nextLine();
+                if ("no".equalsIgnoreCase(response)) {
+                    ordering = false;
+                }
+            }
+
+            // Display the total price
+            System.out.println("Total price: $" + totalPrice);
+
+            // Place the order
+            boolean success = true;
+            int orderId = orderService.placeOrder(authenticatedUser.getUserId(), venue.getVenueId(), new Date());
+            if (orderId != -1) {
+                for (int i = 0; i < orderItems.size(); i++) {
+                    MenuItem item = orderItems.get(i);
+                    int quantity = quantities.get(i);
+                    success &= orderService.addOrderItem(orderId, item.getItemId(), quantity);
+                }
+
+                if (success) {
+                    System.out.println("Order placed successfully. Order ID: " + orderId);
+                } else {
+                    System.out.println("Failed to place order.");
+                }
+            } else {
+                System.out.println("Failed to create order.");
+            }
         } else {
-            System.out.println("You need to authenticate first.");
+            System.out.println("Only authenticated clients can place orders.");
         }
     }
 
     private static void addRestaurant(Scanner scanner, VenueService venueService) {
-        if (authenticatedUser != null) {
+        if (authenticatedUser != null && "Owner".equals(authenticatedUser.getRole())) {
             System.out.print("Enter restaurant name: ");
             String name = scanner.nextLine();
             System.out.print("Enter restaurant address: ");
             String address = scanner.nextLine();
             System.out.print("Enter restaurant phone number: ");
             String phoneNumber = scanner.nextLine();
-            venueService.addVenue(name, address, phoneNumber);
+            venueService.addVenue(name, address, phoneNumber, authenticatedUser.getUserId());
         } else {
-            System.out.println("You need to authenticate first.");
+            System.out.println("Only authenticated owners can add restaurants.");
         }
     }
 
     private static void addMenuItem(Scanner scanner, MenuItemService menuItemService, VenueService venueService) {
-        if (authenticatedUser != null) {
+        if (authenticatedUser != null && "Owner".equals(authenticatedUser.getRole())) {
             System.out.print("Enter restaurant name: ");
             String venueName = scanner.nextLine();
 
@@ -159,14 +265,12 @@ public class Main {
                 System.out.println("Failed to add menu item for restaurant: " + venueName);
             }
         } else {
-            System.out.println("You need to authenticate first.");
+            System.out.println("Only authenticated owners can add menu items.");
         }
     }
 
-    private static void viewOrderStatus(Scanner scanner, OrderService orderService) {
-        System.out.print("Enter order ID: ");
-        int orderId = scanner.nextInt();
-        orderService.viewOrderStatus(orderId);
+    private static void viewOrderStatus(OrderService orderService) {
+        orderService.viewOrderStatus(authenticatedUser.getUserId());
     }
 
     private static void updateOrderStatus(Scanner scanner, OrderService orderService) {
