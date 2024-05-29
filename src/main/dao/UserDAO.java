@@ -1,6 +1,8 @@
 package main.dao;
 
 import main.db.BdConnection;
+import main.model.Client;
+import main.model.Owner;
 import main.model.User;
 
 import java.sql.Connection;
@@ -10,13 +12,14 @@ import java.sql.SQLException;
 
 public class UserDAO {
     public boolean registerUser(User user) {
-        String sql = "INSERT INTO Users (name, email, address, password) VALUES (?, ?, ?, ?)";
+        String sql = "INSERT INTO Users (name, email, address, password, role) VALUES (?, ?, ?, ?, ?)";
         try (Connection conn = BdConnection.getConnection();
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
             pstmt.setString(1, user.getName());
             pstmt.setString(2, user.getEmail());
             pstmt.setString(3, user.getAddress());
             pstmt.setString(4, user.getPassword());
+            pstmt.setString(5, user.getRole());
             pstmt.executeUpdate();
             return true;
         } catch (SQLException e) {
@@ -46,12 +49,21 @@ public class UserDAO {
             pstmt.setString(1, email);
             ResultSet rs = pstmt.executeQuery();
             if (rs.next()) {
-                User user = new User();
+                String role = rs.getString("role");
+                User user;
+                if ("Client".equals(role)) {
+                    user = new Client();
+                } else if ("Owner".equals(role)) {
+                    user = new Owner();
+                } else {
+                    return null; // Invalid role
+                }
                 user.setUserId(rs.getInt("user_id"));
                 user.setName(rs.getString("name"));
                 user.setEmail(rs.getString("email"));
                 user.setAddress(rs.getString("address"));
                 user.setPassword(rs.getString("password"));
+                user.setRole(role);
                 return user;
             }
         } catch (SQLException e) {

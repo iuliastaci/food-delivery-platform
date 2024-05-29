@@ -5,66 +5,26 @@ public class Venue {
     private String name;
     private String address;
     private String phoneNumber;
+    private int ownerId;
+
     public Venue() {
     }
 
-    public Venue(int venueId, String name, String address, String phoneNumber) {
+    public Venue(int venueId, String name, String address, String phoneNumber, int ownerId) {
         this.venueId = venueId;
         this.name = name;
         this.address = address;
         this.phoneNumber = phoneNumber;
+        this.ownerId = ownerId;
     }
-
-    public String getName(){
-        return name;
-    }
-
-    public String getAddress() {
-        return address;
-    }
-
-    public String getPhoneNumber() {
-        return phoneNumber;
-    }
-
-    public void setVenueId(int venueId) {
-        this.venueId = venueId;
-    }
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public void setAddress(String address) {
-        this.address = address;
-    }
-
-    public void setPhoneNumber(String phoneNumber) {
-        this.phoneNumber = phoneNumber;
-    }
-
-    public int getVenueId() {
-        return venueId;
-    }
-
-    @Override
-    public String toString() {
-        return "Venue{" +
-                "venueId=" + venueId +
-                ", name='" + name + '\'' +
-                ", address='" + address + '\'' +
-                ", phoneNumber='" + phoneNumber + '\'' +
-                '}';
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (!(o instanceof Venue venue)) return false;
-        return getVenueId() == venue.getVenueId() && getName().equals(venue.getName()) && getAddress().equals(venue.getAddress()) && getPhoneNumber().equals(venue.getPhoneNumber());
-    }
-
-    @Override
-    public int hashCode() {
-        return java.util.Objects.hash(getVenueId(), getName(), getAddress(), getPhoneNumber());
-    }
+    public int getVenueId() { return venueId; }
+    public void setVenueId(int venueId) { this.venueId = venueId; }
+    public String getName() { return name; }
+    public void setName(String name) { this.name = name; }
+    public String getAddress() { return address; }
+    public void setAddress(String address) { this.address = address; }
+    public String getPhoneNumber() { return phoneNumber; }
+    public void setPhoneNumber(String phoneNumber) { this.phoneNumber = phoneNumber; }
+    public int getOwnerId() { return ownerId; }
+    public void setOwnerId(int ownerId) { this.ownerId = ownerId; }
 }
