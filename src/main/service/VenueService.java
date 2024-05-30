@@ -6,7 +6,7 @@ import main.model.Venue;
 import java.util.List;
 
 public class VenueService {
-    private VenueDAO venueDAO = new VenueDAO();
+    private final VenueDAO venueDAO = new VenueDAO();
 
     public void addVenue(String name, String address, String phoneNumber, int ownerId) {
         Venue venue = new Venue();
@@ -14,11 +14,11 @@ public class VenueService {
         venue.setAddress(address);
         venue.setPhoneNumber(phoneNumber);
         venue.setOwnerId(ownerId);
-        venueDAO.addVenue(venue);
+        venueDAO.add(venue);
     }
 
     public List<Venue> listVenues() {
-        return venueDAO.listVenues();
+        return venueDAO.getAll();
     }
 
     public boolean venueExists(String name) {
