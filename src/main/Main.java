@@ -1,10 +1,6 @@
 package main;
 
-import main.model.Client;
-import main.model.Owner;
-import main.model.User;
-import main.model.Venue;
-import main.model.MenuItem;
+import main.model.*;
 import main.service.UserService;
 import main.service.OrderService;
 import main.service.VenueService;
@@ -127,7 +123,7 @@ public class Main {
     }
 
     private static void placeOrder(Scanner scanner, OrderService orderService, VenueService venueService, MenuItemService menuItemService) {
-        if (authenticatedUser != null && "Client".equals(authenticatedUser.getRole())) {
+        if (authenticatedUser != null && authenticatedUser.getRole() == Role.CLIENT) {
             // List all restaurants
             List<Venue> venues = venueService.listVenues();
             if (venues.isEmpty()) {
@@ -227,7 +223,7 @@ public class Main {
     }
 
     private static void addRestaurant(Scanner scanner, VenueService venueService) {
-        if (authenticatedUser != null && "Owner".equals(authenticatedUser.getRole())) {
+        if (authenticatedUser != null && authenticatedUser.getRole() == Role.OWNER) {
             System.out.print("Enter restaurant name: ");
             String name = scanner.nextLine();
             System.out.print("Enter restaurant address: ");
@@ -241,7 +237,7 @@ public class Main {
     }
 
     private static void addMenuItem(Scanner scanner, MenuItemService menuItemService, VenueService venueService) {
-        if (authenticatedUser != null && "Owner".equals(authenticatedUser.getRole())) {
+        if (authenticatedUser != null && authenticatedUser.getRole() == Role.OWNER){
             System.out.print("Enter restaurant name: ");
             String venueName = scanner.nextLine();
 
