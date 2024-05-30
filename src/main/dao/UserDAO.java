@@ -141,7 +141,7 @@ public class UserDAO implements GenericDAO<User>{
     }
 
     public boolean authenticateUser(String email, String password) {
-        String sql = "SELECT * FROM Users WHERE email = ? AND password = ?";
+        String sql = "SELECT * FROM Users WHERE Email = ? AND Password = ?";
         try (Connection conn = BdConnection.getConnection();
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
             pstmt.setString(1, email);
@@ -161,21 +161,11 @@ public class UserDAO implements GenericDAO<User>{
             pstmt.setString(1, email);
             ResultSet rs = pstmt.executeQuery();
             if (rs.next()) {
-                String role = rs.getString("role");
-                User user;
-                if ("Client".equals(role)) {
-                    user = new Client();
-                } else if ("Owner".equals(role)) {
-                    user = new Owner();
-                } else {
-                    return null; // Invalid role
+                int roleId = rs.getInt("RoleId");
+                User user = createUserInstanceByRole(roleId);
+                if (user != null) {
+                    populateUserFromResultSet(rs, user, roleId);
                 }
-                user.setUserId(rs.getInt("user_id"));
-                user.setName(rs.getString("name"));
-                user.setEmail(rs.getString("email"));
-                user.setAddress(rs.getString("address"));
-                user.setPassword(rs.getString("password"));
-                user.setRole(Role.valueOf(role));
                 return user;
             }
         } catch (SQLException e) {
