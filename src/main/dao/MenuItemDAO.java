@@ -107,11 +107,11 @@ public class MenuItemDAO implements GenericDAO<MenuItem> {
             ResultSet rs = pstmt.executeQuery();
             while (rs.next()) {
                 MenuItem menuItem = new MenuItem();
-                menuItem.setItemId(rs.getInt("item_id"));
-                menuItem.setVenueId(rs.getInt("venue_id"));
-                menuItem.setName(rs.getString("name"));
-                menuItem.setPrice(rs.getDouble("price"));
-                menuItem.setDescription(rs.getString("description"));
+                menuItem.setItemId(rs.getInt("Id"));
+                menuItem.setVenueId(rs.getInt("VenueId"));
+                menuItem.setName(rs.getString("Name"));
+                menuItem.setPrice(rs.getDouble("Price"));
+                menuItem.setDescription(rs.getString("Description"));
                 menuItems.add(menuItem);
             }
         } catch (SQLException e) {

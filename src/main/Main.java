@@ -281,7 +281,7 @@ public class Main {
             System.out.print("Enter order ID: ");
             int orderId = scanner.nextInt();
             scanner.nextLine(); // Consume newline
-            System.out.print("Enter new status (Pending/Delivered): ");
+            System.out.print("Enter new status (PENDING/DONE): ");
             String status = scanner.nextLine();
             orderService.updateOrderStatus(orderId, status);
         } else {
