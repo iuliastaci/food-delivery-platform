@@ -33,6 +33,7 @@ public class Main {
             System.out.println("8. List Restaurants");
             System.out.println("9. List Menu Items");
             System.out.println("0. Exit");
+            System.out.println("Enter your choice: ");
             int choice = scanner.nextInt();
             scanner.nextLine();
 
@@ -242,10 +243,11 @@ public class Main {
             String venueName = scanner.nextLine();
 
             // Verify if the venue exists
-            if (!venueService.venueExists(venueName)) {
-                System.out.println("Restaurant not found: " + venueName);
-                return; // Return immediately to main menu
-            }
+            Venue venue = venueService.getVenueByName(venueName);
+                if (venue == null){
+                    System.out.println("Restaurant not found.");
+                    return; // Return immediately to main menu
+                }
 
             System.out.print("Enter item name: ");
             String name = scanner.nextLine();
@@ -266,19 +268,24 @@ public class Main {
     }
 
     private static void viewOrderStatus(OrderService orderService) {
-        orderService.viewOrderStatus(authenticatedUser.getUserId());
+        if (authenticatedUser != null) {
+            orderService.viewOrderStatus(authenticatedUser.getUserId());
+        } else {
+            System.out.println("You need to authenticate first.");
+        }
+
     }
 
     private static void updateOrderStatus(Scanner scanner, OrderService orderService) {
-        if (authenticatedUser != null) {
+        if (authenticatedUser != null && authenticatedUser.getRole() == Role.OWNER) {
             System.out.print("Enter order ID: ");
             int orderId = scanner.nextInt();
             scanner.nextLine(); // Consume newline
-            System.out.print("Enter new status (Pending/Delivered): ");
+            System.out.print("Enter new status (PENDING/DONE): ");
             String status = scanner.nextLine();
             orderService.updateOrderStatus(orderId, status);
         } else {
-            System.out.println("You need to authenticate first.");
+            System.out.println("Only authenticated owners can update order status.");
         }
     }
 
