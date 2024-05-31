@@ -1,5 +1,7 @@
 package main.model;
 
+import java.util.Objects;
+
 public class Venue {
     private int venueId;
     private String name;
@@ -27,4 +29,26 @@ public class Venue {
     public void setPhoneNumber(String phoneNumber) { this.phoneNumber = phoneNumber; }
     public int getOwnerId() { return ownerId; }
     public void setOwnerId(int ownerId) { this.ownerId = ownerId; }
+
+    @Override
+    public String toString() {
+        return "Venue{" +
+                "venueId=" + venueId +
+                ", name='" + name + '\'' +
+                ", address='" + address + '\'' +
+                ", phoneNumber='" + phoneNumber +
+                '}';
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof Venue venue)) return false;
+        return getVenueId() == venue.getVenueId() && getOwnerId() == venue.getOwnerId() && Objects.equals(getName(), venue.getName()) && Objects.equals(getAddress(), venue.getAddress()) && Objects.equals(getPhoneNumber(), venue.getPhoneNumber());
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(getVenueId(), getName(), getAddress(), getPhoneNumber(), getOwnerId());
+    }
 }

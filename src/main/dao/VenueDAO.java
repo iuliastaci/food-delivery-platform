@@ -82,11 +82,11 @@ public class VenueDAO implements GenericDAO<Venue>{
             ResultSet rs = pstmt.executeQuery();
             while (rs.next()) {
                 Venue venue = new Venue();
-                venue.setVenueId(rs.getInt("venue_id"));
-                venue.setName(rs.getString("name"));
-                venue.setAddress(rs.getString("address"));
-                venue.setPhoneNumber(rs.getString("phone_number"));
-                venue.setOwnerId(rs.getInt("owner_id"));
+                venue.setVenueId(rs.getInt("Id"));
+                venue.setName(rs.getString("Name"));
+                venue.setAddress(rs.getString("Address"));
+                venue.setPhoneNumber(rs.getString("Phone_number"));
+                venue.setOwnerId(rs.getInt("UserId"));
                 venues.add(venue);
             }
         } catch (SQLException e) {
