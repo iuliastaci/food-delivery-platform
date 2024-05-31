@@ -277,7 +277,7 @@ public class Main {
     }
 
     private static void updateOrderStatus(Scanner scanner, OrderService orderService) {
-        if (authenticatedUser != null) {
+        if (authenticatedUser != null && authenticatedUser.getRole() == Role.OWNER) {
             System.out.print("Enter order ID: ");
             int orderId = scanner.nextInt();
             scanner.nextLine(); // Consume newline
@@ -285,7 +285,7 @@ public class Main {
             String status = scanner.nextLine();
             orderService.updateOrderStatus(orderId, status);
         } else {
-            System.out.println("You need to authenticate first.");
+            System.out.println("Only authenticated owners can update order status.");
         }
     }
 

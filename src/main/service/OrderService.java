@@ -6,9 +6,10 @@ import main.model.OrderItem;
 import main.model.OrderStatus;
 
 import java.util.Date;
+import java.util.List;
 
 public class OrderService {
-    private OrderDAO orderDAO = new OrderDAO();
+    private final OrderDAO orderDAO = new OrderDAO();
 
     public int placeOrder(int userId, int venueId, Date orderDate) {
         Order order = new Order();
@@ -16,11 +17,7 @@ public class OrderService {
         order.setVenueId(venueId);
         order.setStatus(OrderStatus.PENDING);
         order.setOrderDate(orderDate);
-        order.setStatus(OrderStatus.PENDING);
         int orderId = orderDAO.placeOrder(order);
-        OrderItem orderItem = new OrderItem();
-        orderItem.setOrderId(orderId);
-        orderDAO.addOrderItem(orderItem);
         return orderId;
     }
 
@@ -32,6 +29,14 @@ public class OrderService {
         return orderDAO.addOrderItem(orderItem);
     }
 
+    public Order viewOrder(int orderId){
+        return orderDAO.read(orderId);
+    }
+
+    public List<Order> gettAllOrders(){
+        return orderDAO.getAll();
+    }
+
     public void viewOrderStatus(int userId) {
         orderDAO.viewOrderStatus(userId);
     }
@@ -40,4 +45,7 @@ public class OrderService {
         orderDAO.updateOrderStatus(orderId, status);
     }
 
+    public void deleteOrder(int orderId) {
+        orderDAO.delete(orderId);
+    }
 }
