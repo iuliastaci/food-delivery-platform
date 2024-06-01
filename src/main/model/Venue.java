@@ -4,7 +4,7 @@ import java.util.Objects;
 
 public class Venue {
     private int venueId;
-    private String name;
+    private static String name;
     private String address;
     private String phoneNumber;
     private int ownerId;
@@ -21,7 +21,7 @@ public class Venue {
     }
     public int getVenueId() { return venueId; }
     public void setVenueId(int venueId) { this.venueId = venueId; }
-    public String getName() { return name; }
+    public static String getName() { return name; }
     public void setName(String name) { this.name = name; }
     public String getAddress() { return address; }
     public void setAddress(String address) { this.address = address; }

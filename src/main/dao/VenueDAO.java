@@ -2,12 +2,15 @@ package main.dao;
 
 import main.db.BdConnection;
 import main.model.Venue;
+import main.service.AuditService;
 
 import java.sql.*;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
 public class VenueDAO implements GenericDAO<Venue>{
+    private final AuditService auditService = new AuditService();
     @Override
     public void add(Venue venue) {
         String sql = "INSERT INTO Venues (Name, Address, Phone_number, UserId) VALUES (?, ?, ?, ?)";
@@ -18,6 +21,7 @@ public class VenueDAO implements GenericDAO<Venue>{
             pstmt.setString(3, venue.getPhoneNumber());
             pstmt.setInt(4, venue.getOwnerId());
             pstmt.executeUpdate();
+            auditService.logTransaction("ADD_RESTAURANT", "Name=" + Venue.getName() + LocalDateTime.now());
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -39,6 +43,7 @@ public class VenueDAO implements GenericDAO<Venue>{
                 venue.setOwnerId(rs.getInt("UserId"));
                 return venue;
             }
+            auditService.logTransaction("GET_RESTAURANT", "VenueId=" + id + LocalDateTime.now());
         } catch (SQLException e){
             e.printStackTrace();
         }
@@ -56,6 +61,7 @@ public class VenueDAO implements GenericDAO<Venue>{
             pstmt.setInt(4, venue.getOwnerId());
             pstmt.setInt(5, venue.getVenueId());
             pstmt.executeUpdate();
+            auditService.logTransaction("UPDATE_RESTAURANT", "VenueId=" + venue.getVenueId());
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -68,6 +74,7 @@ public class VenueDAO implements GenericDAO<Venue>{
             PreparedStatement pstmt = conn.prepareStatement(sql)){
             pstmt.setInt(1, id);
             pstmt.executeUpdate();
+            auditService.logTransaction("DELETE_RESTAURANT", "VenueId=" + id);
         }catch (SQLException e){
             e.printStackTrace();
         }

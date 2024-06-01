@@ -63,4 +63,8 @@ public class MenuItemService {
     public List<MenuItem> getAllMenuItems() {
         return menuItemDAO.getAll();
     }
+
+    public String getItemNameById(int itemId) {
+        return menuItemDAO.getItemNameById(itemId);
+    }
 }

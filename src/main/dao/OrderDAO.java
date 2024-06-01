@@ -4,12 +4,18 @@ import main.model.Order;
 import main.model.OrderItem;
 import main.db.BdConnection;
 import main.model.OrderStatus;
+import main.model.Role;
+import main.service.AuditService;
+import main.service.OrderService;
 
 import java.sql.*;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.ArrayList;
+import java.util.Scanner;
 
 public class OrderDAO implements GenericDAO<Order>{
+    private final AuditService auditService = new AuditService();
     @Override
     public void add(Order order) {
         String sql = "INSERT INTO Orders (UserId, VenueId, OrderStatusId) VALUES (?, ?, ?)";
@@ -26,6 +32,7 @@ public class OrderDAO implements GenericDAO<Order>{
                 } else {
                     throw new SQLException("Creating order failed, no ID obtained.");
                 }
+                auditService.logTransaction("PLACE_ORDER", "OrderId=" + order.getOrderId());
             }
         } catch (SQLException e) {
             e.printStackTrace();
@@ -48,6 +55,7 @@ public class OrderDAO implements GenericDAO<Order>{
                     return order;
                 }
             }
+            auditService.logTransaction("GET_ORDER", "OrderId=" + id);
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -64,6 +72,7 @@ public class OrderDAO implements GenericDAO<Order>{
             pstmt.setInt(3, order.getStatus().ordinal() + 1);
             pstmt.setInt(4, order.getOrderId());
             pstmt.executeUpdate();
+            auditService.logTransaction("UPDATE_ORDER", "OrderId=" + order.getOrderId());
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -76,6 +85,7 @@ public class OrderDAO implements GenericDAO<Order>{
             PreparedStatement pstmt = conn.prepareStatement(sql)){
             pstmt.setInt(1, id);
             pstmt.executeUpdate();
+            auditService.logTransaction("DELETE_ORDER", "OrderId=" + id);
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -114,6 +124,7 @@ public class OrderDAO implements GenericDAO<Order>{
             pstmt.setInt(2, orderItem.getItemId());
             pstmt.setInt(3, orderItem.getQuantity());
             pstmt.executeUpdate();
+            auditService.logTransaction("ADD_ORDER_ITEM", "OrderId=" + orderItem.getOrderId());
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -133,6 +144,7 @@ public class OrderDAO implements GenericDAO<Order>{
                     System.out.println("Order not found.");
                 }
             }
+
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -145,9 +157,50 @@ public class OrderDAO implements GenericDAO<Order>{
             pstmt.setInt(1, OrderStatus.valueOf(status).ordinal() + 1);
             pstmt.setInt(2, orderId);
             pstmt.executeUpdate();
+            auditService.logTransaction("UPDATE_ORDER_STATUS", "OrderId=" + orderId);
         } catch (SQLException e) {
             e.printStackTrace();
         }
     }
 
+    public List<Order> listOrders(String venueName) {
+        List<Order> orders = new ArrayList<>();
+        String sql = "SELECT * FROM Orders WHERE VenueId = (SELECT VenueId FROM Venues WHERE Name = ?)";
+        try (Connection conn = BdConnection.getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            pstmt.setString(1, venueName);
+            try (ResultSet rs = pstmt.executeQuery()) {
+                while (rs.next()) {
+                    Order order = new Order();
+                    order.setOrderId(rs.getInt("Id"));
+                    order.setUserId(rs.getInt("UserId"));
+                    order.setVenueId(rs.getInt("VenueId"));
+                    order.setStatus(OrderStatus.values()[rs.getInt("OrderStatusId") - 1]);
+                    orders.add(order);
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return orders;
+    }
+
+    public List<String> getOrderItems(int orderId) {
+        List<String> itemNames = new ArrayList<>();
+        String sql = "SELECT MenuItems.Name FROM OrderItems " +
+                "JOIN MenuItems ON OrderItems.ItemId = MenuItems.Id " +
+                "WHERE OrderItems.OrderId = ?";
+        try (Connection conn = BdConnection.getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            pstmt.setInt(1, orderId);
+            try (ResultSet rs = pstmt.executeQuery()) {
+                while (rs.next()) {
+                    itemNames.add(rs.getString("Name"));
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return itemNames;
+    }
 }
