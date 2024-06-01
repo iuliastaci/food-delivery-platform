@@ -5,15 +5,18 @@ import main.model.Client;
 import main.model.Owner;
 import main.model.Role;
 import main.model.User;
+import main.service.AuditService;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.ArrayList;
 
 public class UserDAO implements GenericDAO<User>{
+    private final AuditService auditService = new AuditService();
     @Override
     public void add(User user) {
         String sql = "INSERT INTO Users (RoleId, Name, Email, Address, Password) VALUES (?, ?, ?, ?, ?)";
@@ -25,6 +28,7 @@ public class UserDAO implements GenericDAO<User>{
             pstmt.setString(4, user.getAddress());
             pstmt.setString(5, user.getPassword());
             pstmt.executeUpdate();
+            auditService.logTransaction("ADD_USER", "Username=" + user.getName());
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -45,6 +49,7 @@ public class UserDAO implements GenericDAO<User>{
                 }
                 return user;
             }
+            auditService.logTransaction("GET_USER", "UserId=" + id);
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -63,6 +68,7 @@ public class UserDAO implements GenericDAO<User>{
             pstmt.setString(5, user.getPassword());
             pstmt.setInt(6, user.getUserId());
             pstmt.executeUpdate();
+            auditService.logTransaction("UPDATE_USER", "UserId=" + user.getUserId());
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -75,6 +81,7 @@ public class UserDAO implements GenericDAO<User>{
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
             pstmt.setInt(1, id);
             pstmt.executeUpdate();
+            auditService.logTransaction("DELETE_USER", "UserId=" + id);
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -151,6 +158,7 @@ public class UserDAO implements GenericDAO<User>{
         } catch (SQLException e) {
             e.printStackTrace();
         }
+        auditService.logTransaction("AUTHENTICATE_USER", "Email=" + email);
         return false;
     }
 

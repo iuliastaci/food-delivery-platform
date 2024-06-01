@@ -60,7 +60,8 @@ public class Order {
         this.status = status;
     }
 
-    @Override
+
+     @Override
     public String toString() {
         return "Order{" +
                 "orderId=" + orderId +
@@ -82,6 +83,7 @@ public class Order {
     public int hashCode() {
         return Objects.hash(getOrderId(), getUserId(), getVenueId(), getOrderDate(), getStatus());
     }
+
 }
 
 

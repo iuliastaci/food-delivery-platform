@@ -1,6 +1,6 @@
 package main.model;
 
-import main.service.AuditLog;
+import main.service.AuditService;
 
 public class FoodDeliveryService {
     public void addVenue(Venue venue) {
@@ -12,11 +12,11 @@ public class FoodDeliveryService {
     }
 
     private void logAction(String action) {
-        AuditLog.logAction(action);
+        AuditService.logAction(action);
     }
 
     public void viewAuditLog() {
-        AuditLog.viewAuditLog();
+        AuditService.viewAuditLog();
     }
 
 

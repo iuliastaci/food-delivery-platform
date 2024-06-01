@@ -9,7 +9,7 @@ import java.util.Date;
 import java.util.List;
 
 public class OrderService {
-    private final OrderDAO orderDAO = new OrderDAO();
+    private static final OrderDAO orderDAO = new OrderDAO();
 
     public int placeOrder(int userId, int venueId, Date orderDate) {
         Order order = new Order();
@@ -29,6 +29,7 @@ public class OrderService {
         return orderDAO.addOrderItem(orderItem);
     }
 
+
     public Order viewOrder(int orderId){
         return orderDAO.read(orderId);
     }
@@ -41,11 +42,21 @@ public class OrderService {
         orderDAO.viewOrderStatus(userId);
     }
 
-    public void updateOrderStatus(int orderId, String status) {
-        orderDAO.updateOrderStatus(orderId, status);
-    }
-
     public void deleteOrder(int orderId) {
         orderDAO.delete(orderId);
     }
+
+    public List<Order> listOrders(String venueName) {
+        //list all the orders for a specific venue
+        return orderDAO.listOrders(venueName);
+
+    }
+
+    public static void updateOrderStatus(int orderId, String status) {
+        orderDAO.updateOrderStatus(orderId, status);
+    }
+
+    public List<String> listOrderItems(int orderId) {
+            return orderDAO.getOrderItems(orderId);
+        }
 }
