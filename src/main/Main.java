@@ -63,7 +63,7 @@ public class Main {
                     listRestaurants(venueService);
                     break;
                 case 9:
-                    listMenuItems(scanner, menuItemService);
+                    listMenuItems(scanner, menuItemService, venueService);
                     break;
                 case 0:
                     System.exit(0);
@@ -275,27 +275,77 @@ public class Main {
         }
 
     }
-
     private static void updateOrderStatus(Scanner scanner, OrderService orderService) {
         if (authenticatedUser != null && authenticatedUser.getRole() == Role.OWNER) {
+            System.out.print("Enter restaurant name: ");
+            String venueName = scanner.nextLine();
+            List<Order> orders = orderService.listOrders(venueName);
+            if (orders.isEmpty()) {
+                System.out.println("No orders available for this restaurant.");
+                return;
+            }
+            System.out.println("Available orders:");
+            for (Order order : orders) {
+                List<String> itemNames = orderService.listOrderItems(order.getOrderId());
+                System.out.println("Order ID: " + order.getOrderId() + " - Items ordered: " + String.join(", ", itemNames) + " - Status: " + order.getStatus());
+            }
             System.out.print("Enter order ID: ");
             int orderId = scanner.nextInt();
             scanner.nextLine(); // Consume newline
             System.out.print("Enter new status (PENDING/DONE): ");
             String status = scanner.nextLine();
-            orderService.updateOrderStatus(orderId, status);
+            OrderService.updateOrderStatus(orderId, status);
         } else {
             System.out.println("Only authenticated owners can update order status.");
         }
     }
 
+
     private static void listRestaurants(VenueService venueService) {
-        venueService.listVenues().forEach(System.out::println);
+        List<Venue> venues = venueService.listVenues();
+        if (venues.isEmpty()) {
+            System.out.println("No restaurants available.");
+            return;
+        }
+
+        System.out.println("Available restaurants:");
+        for (Venue venue : venues) {
+            System.out.println(venue.getName());
+        }
     }
 
-    private static void listMenuItems(Scanner scanner, MenuItemService menuItemService) {
-        System.out.print("Enter restaurant ID: ");
-        int venueId = scanner.nextInt();
-        menuItemService.listMenuItems(venueId).forEach(System.out::println);
+    private static void listMenuItems(Scanner scanner, MenuItemService menuItemService, VenueService venueService) {
+        List<Venue> venues = venueService.listVenues();
+        if (venues.isEmpty()) {
+            System.out.println("No restaurants available.");
+            return;
+        }
+
+        System.out.println("Available restaurants:");
+        for (Venue venue : venues) {
+            System.out.println(venue.getName());
+        }
+
+        // Prompt user to enter restaurant name
+        System.out.print("Enter the name of the restaurant: ");
+        String venueName = scanner.nextLine();
+        Venue venue = venueService.getVenueByName(venueName);
+
+        if (venue == null) {
+            System.out.println("Restaurant not found.");
+            return;
+        }
+
+        // List menu items for the selected restaurant
+        List<MenuItem> menuItems = menuItemService.listMenuItems(venue.getVenueId());
+        if (menuItems.isEmpty()) {
+            System.out.println("No menu items available for this restaurant.");
+            return;
+        }
+
+        System.out.println("Available menu items:");
+            for (MenuItem menuItem : menuItems) {
+                System.out.println(menuItem.getItemId() + ". " + menuItem.getName() + " - $" + menuItem.getPrice());
+            }
     }
 }
