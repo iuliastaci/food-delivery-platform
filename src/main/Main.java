@@ -1,5 +1,7 @@
 package main;
 
+import main.exceptions.UnauthorizedException;
+import main.exceptions.ValidationException;
 import main.model.*;
 import main.service.UserService;
 import main.service.OrderService;
@@ -125,7 +127,6 @@ public class Main {
 
     private static void placeOrder(Scanner scanner, OrderService orderService, VenueService venueService, MenuItemService menuItemService) {
         if (authenticatedUser != null && authenticatedUser.getRole() == Role.CLIENT) {
-            // List all restaurants
             List<Venue> venues = venueService.listVenues();
             if (venues.isEmpty()) {
                 System.out.println("No restaurants available.");
@@ -137,7 +138,6 @@ public class Main {
                 System.out.println(venue.getName());
             }
 
-            // Prompt user to enter restaurant name
             System.out.print("Enter the name of the restaurant: ");
             String venueName = scanner.nextLine();
             Venue venue = venueService.getVenueByName(venueName);
@@ -147,14 +147,12 @@ public class Main {
                 return;
             }
 
-            // List menu items for the selected restaurant
             List<MenuItem> menuItems = menuItemService.listMenuItems(venue.getVenueId());
             if (menuItems.isEmpty()) {
                 System.out.println("No menu items available for this restaurant.");
                 return;
             }
 
-            // Create a list to store the order items and quantities
             List<MenuItem> orderItems = new ArrayList<>();
             List<Integer> quantities = new ArrayList<>();
             double totalPrice = 0.0;
@@ -166,12 +164,11 @@ public class Main {
                     System.out.println(menuItem.getItemId() + ". " + menuItem.getName() + " - $" + menuItem.getPrice());
                 }
 
-                // Prompt user to place order
                 System.out.print("Enter item ID: ");
                 int itemId = scanner.nextInt();
                 System.out.print("Enter quantity: ");
                 int quantity = scanner.nextInt();
-                scanner.nextLine(); // Consume newline
+                scanner.nextLine();
 
                 MenuItem selectedItem = null;
                 for (MenuItem menuItem : menuItems) {
@@ -189,7 +186,6 @@ public class Main {
                     System.out.println("Invalid item ID.");
                 }
 
-                // Prompt user if they want to add more items
                 System.out.print("Do you want anything else? (yes/no): ");
                 String response = scanner.nextLine();
                 if ("no".equalsIgnoreCase(response)) {
@@ -197,10 +193,8 @@ public class Main {
                 }
             }
 
-            // Display the total price
             System.out.println("Total price: $" + totalPrice);
 
-            // Place the order
             boolean success = true;
             int orderId = orderService.placeOrder(authenticatedUser.getUserId(), venue.getVenueId(), new Date());
             if (orderId != -1) {
@@ -231,7 +225,14 @@ public class Main {
             String address = scanner.nextLine();
             System.out.print("Enter restaurant phone number: ");
             String phoneNumber = scanner.nextLine();
-            venueService.addVenue(name, address, phoneNumber, authenticatedUser.getUserId());
+            try{
+                venueService.addVenue(name, address, phoneNumber, authenticatedUser.getUserId());
+            } catch(ValidationException validationException)
+            {
+                System.out.println(validationException.getClass().getName());
+                System.out.println(validationException.getMessage());
+            }
+
         } else {
             System.out.println("Only authenticated owners can add restaurants.");
         }
@@ -242,18 +243,17 @@ public class Main {
             System.out.print("Enter restaurant name: ");
             String venueName = scanner.nextLine();
 
-            // Verify if the venue exists
             Venue venue = venueService.getVenueByName(venueName);
                 if (venue == null){
                     System.out.println("Restaurant not found.");
-                    return; // Return immediately to main menu
+                    return;
                 }
 
             System.out.print("Enter item name: ");
             String name = scanner.nextLine();
             System.out.print("Enter item price: ");
             double price = scanner.nextDouble();
-            scanner.nextLine(); // Consume newline
+            scanner.nextLine();
             System.out.print("Enter item description: ");
             String description = scanner.nextLine();
             boolean success = menuItemService.addMenuItem(venueName, name, price, description);
@@ -269,7 +269,14 @@ public class Main {
 
     private static void viewOrderStatus(OrderService orderService) {
         if (authenticatedUser != null) {
-            orderService.viewOrderStatus(authenticatedUser.getUserId());
+            List<Order> orders = orderService.getOrdersStatus(authenticatedUser.getUserId());
+            if(orders.isEmpty()) {
+                System.out.println("No orders to show");
+                return;
+            }
+            for(Order order: orders) {
+                System.out.println(order.toString());
+            }
         } else {
             System.out.println("You need to authenticate first.");
         }
@@ -279,22 +286,28 @@ public class Main {
         if (authenticatedUser != null && authenticatedUser.getRole() == Role.OWNER) {
             System.out.print("Enter restaurant name: ");
             String venueName = scanner.nextLine();
-            List<Order> orders = orderService.listOrders(venueName);
-            if (orders.isEmpty()) {
-                System.out.println("No orders available for this restaurant.");
-                return;
+            try {
+                List<Order> orders = orderService.listOrders(venueName, authenticatedUser.getUserId());
+
+                if (orders.isEmpty()) {
+                    System.out.println("No orders available for this restaurant.");
+                    return;
+                }
+                System.out.println("Available orders:");
+                for (Order order : orders) {
+                    List<String> itemNames = orderService.listOrderItems(order.getOrderId());
+                    System.out.println("Order ID: " + order.getOrderId() + " - Items ordered: " + String.join(", ", itemNames) + " - Status: " + order.getStatus());
+                }
+                System.out.print("Enter order ID: ");
+                int orderId = scanner.nextInt();
+                scanner.nextLine();
+                System.out.print("Enter new status (PENDING/DONE): ");
+                String status = scanner.nextLine();
+                OrderService.updateOrderStatus(orderId, status);
+            } catch(UnauthorizedException e) {
+                System.out.println(e.getClass().getName());
+                System.out.println(e.getMessage());
             }
-            System.out.println("Available orders:");
-            for (Order order : orders) {
-                List<String> itemNames = orderService.listOrderItems(order.getOrderId());
-                System.out.println("Order ID: " + order.getOrderId() + " - Items ordered: " + String.join(", ", itemNames) + " - Status: " + order.getStatus());
-            }
-            System.out.print("Enter order ID: ");
-            int orderId = scanner.nextInt();
-            scanner.nextLine(); // Consume newline
-            System.out.print("Enter new status (PENDING/DONE): ");
-            String status = scanner.nextLine();
-            OrderService.updateOrderStatus(orderId, status);
         } else {
             System.out.println("Only authenticated owners can update order status.");
         }
@@ -326,7 +339,6 @@ public class Main {
             System.out.println(venue.getName());
         }
 
-        // Prompt user to enter restaurant name
         System.out.print("Enter the name of the restaurant: ");
         String venueName = scanner.nextLine();
         Venue venue = venueService.getVenueByName(venueName);
@@ -336,7 +348,6 @@ public class Main {
             return;
         }
 
-        // List menu items for the selected restaurant
         List<MenuItem> menuItems = menuItemService.listMenuItems(venue.getVenueId());
         if (menuItems.isEmpty()) {
             System.out.println("No menu items available for this restaurant.");

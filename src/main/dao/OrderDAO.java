@@ -1,5 +1,6 @@
 package main.dao;
 
+import main.exceptions.UnauthorizedException;
 import main.model.Order;
 import main.model.OrderItem;
 import main.db.BdConnection;
@@ -10,6 +11,7 @@ import main.service.OrderService;
 
 import java.sql.*;
 import java.time.LocalDateTime;
+import java.util.Arrays;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.Scanner;
@@ -202,5 +204,48 @@ public class OrderDAO implements GenericDAO<Order>{
             e.printStackTrace();
         }
         return itemNames;
+    }
+
+    public ArrayList<Order> getOrdersStatus(int userId) {
+        ArrayList<Order> orders = new ArrayList<>();
+        String sql = "select * from Orders where UserId = ?";
+        try (Connection conn = BdConnection.getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            pstmt.setInt(1, userId);
+            try (ResultSet rs = pstmt.executeQuery()) {
+                while(rs.next()){
+                    Order order = new Order();
+                    order.setOrderId(rs.getInt("Id"));
+                    order.setUserId(rs.getInt("UserId"));
+                    order.setVenueId(rs.getInt("VenueId"));
+                    order.setOrderDate(rs.getDate("Date"));
+                    order.setStatus(OrderStatus.values()[rs.getInt("OrderStatusId") - 1]);
+                    orders.add(order);
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return orders;
+    }
+
+    public void checkOwner(String venueName, int userId) {
+        boolean isFound = false;
+        String sql = "select * from Venues where UserId = ? and name = ?";
+        try (Connection conn = BdConnection.getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            pstmt.setInt(1, userId);
+            pstmt.setString(2, venueName);
+            try (ResultSet rs = pstmt.executeQuery()) {
+                while(rs.next()){
+                    isFound = true;
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        if(!isFound) {
+            throw new UnauthorizedException("Unauthorized!");
+        }
     }
 }

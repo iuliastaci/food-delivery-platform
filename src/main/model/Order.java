@@ -20,6 +20,7 @@ public class Order {
         this.orderDate = orderDate;
         this.status = status;
     }
+
     public int getOrderId() {
         return orderId;
     }
@@ -61,13 +62,12 @@ public class Order {
     }
 
 
-     @Override
+    @Override
     public String toString() {
-        return "Order{" +
-                "orderId=" + orderId +
+        return "orderId=" + orderId +
                 ", userId=" + userId +
                 ", venueId=" + venueId +
-                ", orderDate=" + orderDate +
+                ", orderDate=" + orderDate.toString() +
                 ", status='" + status + '\'' +
                 '}';
     }

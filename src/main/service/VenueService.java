@@ -2,11 +2,13 @@ package main.service;
 
 import main.dao.VenueDAO;
 import main.model.Venue;
+import main.validator.VenueValidator;
 
 import java.util.List;
 
 public class VenueService {
     private static final VenueDAO venueDAO = new VenueDAO();
+    private static final VenueValidator validator = new VenueValidator();
 
     public void addVenue(String name, String address, String phoneNumber, int ownerId) {
         Venue venue = new Venue();
@@ -14,10 +16,11 @@ public class VenueService {
         venue.setAddress(address);
         venue.setPhoneNumber(phoneNumber);
         venue.setOwnerId(ownerId);
+        validator.validate(venue);
         venueDAO.add(venue);
     }
 
-    public static List<Venue> listVenues() {
+    public List<Venue> listVenues() {
         return venueDAO.getAll();
     }
 

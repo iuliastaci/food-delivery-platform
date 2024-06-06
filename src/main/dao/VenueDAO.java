@@ -21,7 +21,7 @@ public class VenueDAO implements GenericDAO<Venue>{
             pstmt.setString(3, venue.getPhoneNumber());
             pstmt.setInt(4, venue.getOwnerId());
             pstmt.executeUpdate();
-            auditService.logTransaction("ADD_RESTAURANT", "Name=" + Venue.getName() + LocalDateTime.now());
+            auditService.logTransaction("ADD_RESTAURANT", "Name=" + venue.getName() + LocalDateTime.now());
         } catch (SQLException e) {
             e.printStackTrace();
         }
