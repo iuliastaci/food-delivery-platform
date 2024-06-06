@@ -1,10 +1,12 @@
 package main.service;
 
 import main.dao.OrderDAO;
+import main.exceptions.UnauthorizedException;
 import main.model.Order;
 import main.model.OrderItem;
 import main.model.OrderStatus;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -34,10 +36,6 @@ public class OrderService {
         return orderDAO.read(orderId);
     }
 
-    public List<Order> gettAllOrders(){
-        return orderDAO.getAll();
-    }
-
     public void viewOrderStatus(int userId) {
         orderDAO.viewOrderStatus(userId);
     }
@@ -46,10 +44,12 @@ public class OrderService {
         orderDAO.delete(orderId);
     }
 
-    public List<Order> listOrders(String venueName) {
-        //list all the orders for a specific venue
-        return orderDAO.listOrders(venueName);
-
+    public List<Order> listOrders(String venueName, int userId) {
+        List<Order> orders = orderDAO.listOrders(venueName);
+        if(!orders.isEmpty()){
+            orderDAO.checkOwner(venueName, userId);
+        }
+        return orders;
     }
 
     public static void updateOrderStatus(int orderId, String status) {
@@ -58,5 +58,9 @@ public class OrderService {
 
     public List<String> listOrderItems(int orderId) {
             return orderDAO.getOrderItems(orderId);
-        }
+    }
+
+    public ArrayList<Order> getOrdersStatus(int userId) {
+        return orderDAO.getOrdersStatus(userId);
+    }
 }
