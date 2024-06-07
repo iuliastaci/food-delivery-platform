@@ -2,7 +2,7 @@ package main.model;
 
 import java.util.Objects;
 
-public class User {
+public abstract class User {
     private int userId;
     private String name;
     private String email;
