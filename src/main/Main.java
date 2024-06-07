@@ -285,6 +285,7 @@ public class Main {
         }
 
     }
+
     private static void updateOrderStatus(Scanner scanner, OrderService orderService) {
         if (authenticatedUser != null && authenticatedUser.getRole() == Role.OWNER) {
             System.out.print("Enter restaurant name: ");
