@@ -274,8 +274,11 @@ public class Main {
                 System.out.println("No orders to show");
                 return;
             }
-            for(Order order: orders) {
-                System.out.println(order.toString());
+
+            System.out.println("Available orders:");
+            for (Order order : orders) {
+                List<String> itemNames = orderService.listOrderItems(order.getOrderId());
+                System.out.println("Order ID: " + order.getOrderId() + " - Items ordered: " + String.join(", ", itemNames) + " - Status: " + order.getStatus());
             }
         } else {
             System.out.println("You need to authenticate first.");
